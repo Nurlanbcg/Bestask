@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { X, Settings, Trash2, User } from 'lucide-react';
 import { useApp, DEFAULT_MEMBERS } from '../context/AppContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNotification } from '../context/NotificationContext';
 
 const SpaceSettingsModal = ({ isOpen, onClose, space }) => {
     const { updateSpace, deleteSpace, setActiveSpaceId } = useApp();
+    const { showNotification } = useNotification();
     const [formData, setFormData] = useState({
         name: space?.name || '',
         owner: space?.owner || 'You',
@@ -16,12 +18,14 @@ const SpaceSettingsModal = ({ isOpen, onClose, space }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         updateSpace(space.id, formData);
+        showNotification('Space settings updated', 'success');
         onClose();
     };
 
     const handleDelete = () => {
         if (confirm(`Are you sure you want to delete "${space.name}"? This action cannot be undone.`)) {
             deleteSpace(space.id);
+            showNotification('Space deleted', 'info');
             onClose();
         }
     };

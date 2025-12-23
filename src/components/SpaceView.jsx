@@ -3,14 +3,15 @@ import React, { useState } from 'react';
 import { Kanban, List as ListIcon, Calendar, Clock, Plus, Filter, SlidersHorizontal, LayoutGrid } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { TEMPLATES } from '../data/templates';
-import SummaryView from './views/SummaryView';
-import BoardView from './views/BoardView';
-import ListView from './views/ListView';
-import TimelineView from './views/TimelineView';
-import CalendarView from './views/CalendarView';
+const SummaryView = React.lazy(() => import('./views/SummaryView'));
+const BoardView = React.lazy(() => import('./views/BoardView'));
+const ListView = React.lazy(() => import('./views/ListView'));
+const TimelineView = React.lazy(() => import('./views/TimelineView'));
+const CalendarView = React.lazy(() => import('./views/CalendarView'));
 import SpaceSettingsModal from './SpaceSettingsModal';
 import InviteMembersModal from './InviteMembersModal';
 import clsx from 'clsx';
+import { useNotification } from '../context/NotificationContext';
 
 const ALL_TABS = [
     { id: 'summary', name: 'Summary', icon: LayoutGrid },
@@ -46,6 +47,7 @@ const SpaceView = () => {
     const [activeTab, setActiveTab] = useState('summary');
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+    const { showNotification } = useNotification();
 
     if (!activeSpace) {
         return (
@@ -166,11 +168,17 @@ const SpaceView = () => {
 
             {/* Main Content */}
             <div className="flex-1 overflow-x-auto overflow-y-hidden bg-slate-50/50">
-                {activeTab === 'summary' && <SummaryView />}
-                {activeTab === 'board' && <BoardView template={template} />}
-                {activeTab === 'list' && <ListView />}
-                {activeTab === 'calendar' && <CalendarView />}
-                {activeTab === 'timeline' && <TimelineView />}
+                <React.Suspense fallback={
+                    <div className="flex items-center justify-center h-full">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    </div>
+                }>
+                    {activeTab === 'summary' && <SummaryView />}
+                    {activeTab === 'board' && <BoardView template={template} />}
+                    {activeTab === 'list' && <ListView />}
+                    {activeTab === 'calendar' && <CalendarView />}
+                    {activeTab === 'timeline' && <TimelineView />}
+                </React.Suspense>
             </div>
 
             {/* Space Settings Modal */}
@@ -187,6 +195,7 @@ const SpaceView = () => {
                 onInvite={(emails) => {
                     // Convert emails to names (in real app, would send invites)
                     addMembersToSpace(activeSpaceId, emails);
+                    showNotification(`${emails.length} invitation${emails.length > 1 ? 's' : ''} sent!`, 'success');
                 }}
             />
         </div>

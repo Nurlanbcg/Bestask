@@ -65,12 +65,40 @@ const INITIAL_TASKS = [
 ];
 
 export const AppProvider = ({ children }) => {
-    const [spaces, setSpaces] = useState(INITIAL_SPACES);
-    const [tasks, setTasks] = useState(INITIAL_TASKS);
-    const [activeSpaceId, setActiveSpaceId] = useState(INITIAL_SPACES[0].id);
+    const [spaces, setSpaces] = useState(() => {
+        const saved = localStorage.getItem('bestask_spaces');
+        return saved ? JSON.parse(saved) : INITIAL_SPACES;
+    });
+    const [tasks, setTasks] = useState(() => {
+        const saved = localStorage.getItem('bestask_tasks');
+        return saved ? JSON.parse(saved) : INITIAL_TASKS;
+    });
+    const [activeSpaceId, setActiveSpaceId] = useState(() => {
+        const saved = localStorage.getItem('bestask_active_space');
+        return saved || INITIAL_SPACES[0].id;
+    });
     const [selectedTaskId, setSelectedTaskId] = useState(null);
     const [draftTask, setDraftTask] = useState(null);
-    const [sprints, setSprints] = useState({}); // { spaceId: { activeSprint: number, sprints: [...] } }
+    const [sprints, setSprints] = useState(() => {
+        const saved = localStorage.getItem('bestask_sprints');
+        return saved ? JSON.parse(saved) : {};
+    });
+
+    useEffect(() => {
+        localStorage.setItem('bestask_spaces', JSON.stringify(spaces));
+    }, [spaces]);
+
+    useEffect(() => {
+        localStorage.setItem('bestask_tasks', JSON.stringify(tasks));
+    }, [tasks]);
+
+    useEffect(() => {
+        localStorage.setItem('bestask_active_space', activeSpaceId);
+    }, [activeSpaceId]);
+
+    useEffect(() => {
+        localStorage.setItem('bestask_sprints', JSON.stringify(sprints));
+    }, [sprints]);
 
     const openTaskDrawer = (taskId, initialData = null) => {
         if (taskId === 'new') {

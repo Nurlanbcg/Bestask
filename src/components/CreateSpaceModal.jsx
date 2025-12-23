@@ -4,6 +4,7 @@ import { TEMPLATES } from '../data/templates';
 import { useApp, DEFAULT_MEMBERS } from '../context/AppContext';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNotification } from '../context/NotificationContext';
 
 // Group templates by category
 const CATEGORIES = [
@@ -51,6 +52,7 @@ const CreateSpaceModal = ({ isOpen, onClose }) => {
     const [memberSearch, setMemberSearch] = useState('');
     const dropdownRef = useRef(null);
     const { addSpace, setActiveSpaceId } = useApp();
+    const { showNotification } = useNotification();
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -121,6 +123,7 @@ const CreateSpaceModal = ({ isOpen, onClose }) => {
         });
 
         setActiveSpaceId(newSpace.id);
+        showNotification(`${formData.name} space created successfully!`, 'success');
         onClose();
         // Reset state
         setTimeout(() => {

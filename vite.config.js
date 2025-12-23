@@ -8,5 +8,19 @@ export default defineConfig({
   server: {
     host: true,      // same as --host
     port: 5173
+  },
+
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-framer': ['framer-motion'],
+          'vendor-icons': ['lucide-react'],
+          'vendor-utils': ['date-fns', 'uuid', 'clsx', 'tailwind-merge']
+        }
+      }
+    },
+    chunkSizeWarningLimit: 800
   }
 })

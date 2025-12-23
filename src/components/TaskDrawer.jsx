@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { X, Calendar, User, Tag, Flag, Trash2, Send, Plus, Link as LinkIcon, Eye, Share2, MoreHorizontal, Zap, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import InviteMembersModal from './InviteMembersModal';
+import { useNotification } from '../context/NotificationContext';
 
 const TaskDrawer = () => {
     const {
@@ -23,6 +24,7 @@ const TaskDrawer = () => {
     const [linkType, setLinkType] = useState('is blocked by');
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const { addMembersToSpace, activeSpaceId } = useApp();
+    const { showNotification } = useNotification();
 
     // Find task or use draft
     const isNew = selectedTaskId === 'new';
@@ -46,11 +48,13 @@ const TaskDrawer = () => {
         setLocalTask(updated);
         if (!isNew) {
             updateTask(updated);
+            showNotification('Task updated', 'info');
         }
     };
 
     const handleSaveNew = () => {
         addTask(localTask);
+        showNotification('Task created', 'success');
         closeTaskDrawer();
     };
 
@@ -73,6 +77,7 @@ const TaskDrawer = () => {
     const handleDelete = () => {
         if (confirm('Are you sure you want to delete this task?')) {
             deleteTask(localTask.id);
+            showNotification('Task deleted', 'info');
             closeTaskDrawer();
         }
     };
