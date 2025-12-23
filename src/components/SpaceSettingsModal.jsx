@@ -3,6 +3,7 @@ import { X, Settings, Trash2, User } from 'lucide-react';
 import { useApp, DEFAULT_MEMBERS } from '../context/AppContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotification } from '../context/NotificationContext';
+import ConfirmModal from './ConfirmModal';
 
 const SpaceSettingsModal = ({ isOpen, onClose, space }) => {
     const { updateSpace, deleteSpace, setActiveSpaceId } = useApp();
@@ -12,6 +13,7 @@ const SpaceSettingsModal = ({ isOpen, onClose, space }) => {
         owner: space?.owner || 'You',
         description: space?.description || ''
     });
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
     if (!isOpen || !space) return null;
 
@@ -23,11 +25,13 @@ const SpaceSettingsModal = ({ isOpen, onClose, space }) => {
     };
 
     const handleDelete = () => {
-        if (confirm(`Are you sure you want to delete "${space.name}"? This action cannot be undone.`)) {
-            deleteSpace(space.id);
-            showNotification('Space deleted', 'info');
-            onClose();
-        }
+        setIsDeleteConfirmOpen(true);
+    };
+
+    const confirmDelete = () => {
+        deleteSpace(space.id);
+        showNotification('Space deleted', 'info');
+        onClose();
     };
 
     return (
@@ -131,6 +135,14 @@ const SpaceSettingsModal = ({ isOpen, onClose, space }) => {
                     </motion.div>
                 </div>
             )}
+            <ConfirmModal
+                isOpen={isDeleteConfirmOpen}
+                onClose={() => setIsDeleteConfirmOpen(false)}
+                onConfirm={confirmDelete}
+                title="Delete Space"
+                message={`Are you sure you want to delete "${space?.name}"? All tasks and data in this space will be permanently removed. This action cannot be undone.`}
+                confirmText="Delete Space"
+            />
         </AnimatePresence>
     );
 };

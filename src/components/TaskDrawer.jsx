@@ -4,6 +4,7 @@ import { X, Calendar, User, Tag, Flag, Trash2, Send, Plus, Link as LinkIcon, Eye
 import { motion, AnimatePresence } from 'framer-motion';
 import InviteMembersModal from './InviteMembersModal';
 import { useNotification } from '../context/NotificationContext';
+import ConfirmModal from './ConfirmModal';
 
 const TaskDrawer = () => {
     const {
@@ -23,6 +24,7 @@ const TaskDrawer = () => {
     const [linkedItemText, setLinkedItemText] = useState('');
     const [linkType, setLinkType] = useState('is blocked by');
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const { addMembersToSpace, activeSpaceId } = useApp();
     const { showNotification } = useNotification();
 
@@ -75,11 +77,13 @@ const TaskDrawer = () => {
     };
 
     const handleDelete = () => {
-        if (confirm('Are you sure you want to delete this task?')) {
-            deleteTask(localTask.id);
-            showNotification('Task deleted', 'info');
-            closeTaskDrawer();
-        }
+        setIsDeleteConfirmOpen(true);
+    };
+
+    const confirmDelete = () => {
+        deleteTask(localTask.id);
+        showNotification('Task deleted', 'info');
+        closeTaskDrawer();
     };
 
     const handleAddChildItem = () => {
@@ -396,6 +400,16 @@ const TaskDrawer = () => {
                         onInvite={(emails) => {
                             addMembersToSpace(activeSpaceId, emails);
                         }}
+                    />
+
+                    {/* Confirm Delete Modal */}
+                    <ConfirmModal
+                        isOpen={isDeleteConfirmOpen}
+                        onClose={() => setIsDeleteConfirmOpen(false)}
+                        onConfirm={confirmDelete}
+                        title="Delete Task"
+                        message={`Are you sure you want to delete "${localTask.title}"? This action cannot be undone.`}
+                        confirmText="Delete Task"
                     />
                 </>
             )}

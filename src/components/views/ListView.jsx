@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { ChevronDown, ChevronRight, Plus, MoreHorizontal, Calendar, Briefcase, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus, MoreHorizontal, Calendar, Briefcase, X, ArrowRight } from 'lucide-react';
 import clsx from 'clsx';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -129,97 +129,106 @@ const ListView = () => {
             {/* Start Sprint Modal */}
             <AnimatePresence>
                 {isStartSprintOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-[#1E1E1E] w-full max-w-lg rounded-lg shadow-2xl text-slate-300 border border-slate-700"
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white w-full max-w-xl rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden border border-slate-200"
                         >
-                            <div className="flex items-center justify-between p-4 border-b border-slate-700">
-                                <h2 className="text-lg font-bold text-white">Start Sprint</h2>
-                                <button onClick={() => setIsStartSprintOpen(false)} className="text-slate-400 hover:text-white">
-                                    <X size={20} />
+                            {/* Modal Header */}
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                                <h2 className="text-xl font-bold text-slate-800">Start Sprint</h2>
+                                <button
+                                    onClick={() => setIsStartSprintOpen(false)}
+                                    className="p-1 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-600 transition-colors"
+                                >
+                                    <X size={24} />
                                 </button>
                             </div>
 
-                            <form onSubmit={handleStartSprint}>
-                                <div className="p-6 space-y-4">
-                                    <p className="text-sm text-slate-400">
-                                        <span className="font-bold text-white">{sprintTasks.length}</span> work items will be included in this sprint.
-                                    </p>
-
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-300 mb-1">Sprint name <span className="text-red-500">*</span></label>
-                                        <input
-                                            type="text"
-                                            required
-                                            value={sprintName}
-                                            onChange={e => setSprintName(e.target.value)}
-                                            className="w-full bg-[#2D2D2D] border border-slate-600 rounded px-3 py-2 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-300 mb-1">Duration <span className="text-red-500">*</span></label>
-                                        <select
-                                            className="w-full bg-[#2D2D2D] border border-slate-600 rounded px-3 py-2 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none"
-                                            defaultValue="2 weeks"
-                                        >
-                                            <option>1 week</option>
-                                            <option>2 weeks</option>
-                                            <option>3 weeks</option>
-                                            <option>4 weeks</option>
-                                        </select>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-300 mb-1">Start date <span className="text-red-500">*</span></label>
-                                            <input
-                                                type="date"
-                                                required
-                                                value={startDate}
-                                                onChange={handleStartDateChange}
-                                                className="w-full bg-[#2D2D2D] border border-slate-600 rounded px-3 py-2 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none"
-                                            />
+                            <form onSubmit={handleStartSprint} className="flex flex-col">
+                                <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-start gap-4">
+                                        <div className="bg-blue-600 p-2 rounded-lg text-white">
+                                            <Calendar size={20} />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-bold text-slate-300 mb-1">End date <span className="text-red-500">*</span></label>
-                                            <input
-                                                type="date"
-                                                required
-                                                value={endDate}
-                                                onChange={e => setEndDate(e.target.value)}
-                                                className="w-full bg-[#2D2D2D] border border-slate-600 rounded px-3 py-2 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none"
-                                            />
+                                            <h4 className="text-sm font-bold text-blue-900">Sprint Planning</h4>
+                                            <p className="text-xs text-blue-700 mt-1 leading-relaxed">
+                                                You are about to start <span className="font-bold underline">{sprintName}</span>.
+                                                This will include <span className="font-bold">{sprintTasks.length} work items</span> in your active sprint view.
+                                            </p>
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-300 mb-1">Sprint goal</label>
-                                        <textarea
-                                            rows={4}
-                                            value={sprintGoal}
-                                            onChange={e => setSprintGoal(e.target.value)}
-                                            className="w-full bg-[#2D2D2D] border border-slate-600 rounded px-3 py-2 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none resize-none"
-                                        />
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Sprint name</label>
+                                            <input
+                                                type="text"
+                                                required
+                                                value={sprintName}
+                                                onChange={e => setSprintName(e.target.value)}
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400"
+                                                placeholder="e.g. EB Sprint 1"
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Start date</label>
+                                                <div className="relative">
+                                                    <input
+                                                        type="date"
+                                                        required
+                                                        value={startDate}
+                                                        onChange={handleStartDateChange}
+                                                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">End date</label>
+                                                <div className="relative">
+                                                    <input
+                                                        type="date"
+                                                        required
+                                                        value={endDate}
+                                                        onChange={e => setEndDate(e.target.value)}
+                                                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Sprint goal</label>
+                                            <textarea
+                                                rows={3}
+                                                value={sprintGoal}
+                                                onChange={e => setSprintGoal(e.target.value)}
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none placeholder:text-slate-400"
+                                                placeholder="What are we aiming to achieve in this sprint?"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="p-4 border-t border-slate-700 flex justify-end gap-2 bg-[#252526] rounded-b-lg">
+                                <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
                                     <button
                                         type="button"
                                         onClick={() => setIsStartSprintOpen(false)}
-                                        className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 rounded transition-colors"
+                                        className="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
-                                        className="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 rounded shadow-lg shadow-blue-900/20 transition-colors"
+                                        className="px-6 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg shadow-blue-500/25 active:scale-[0.98] transition-all flex items-center gap-2"
                                     >
-                                        Start
+                                        Start Sprint
+                                        <ArrowRight size={18} />
                                     </button>
                                 </div>
                             </form>

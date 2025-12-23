@@ -38,6 +38,7 @@ const INITIAL_TASKS = [
         type: 'Story',
         priority: 'High',
         assignee: 'Nurlan Ibrahimov',
+        reporter: 'Nurlan Ibrahimov',
         dueDate: new Date().toISOString()
     },
     {
@@ -49,6 +50,7 @@ const INITIAL_TASKS = [
         type: 'Story',
         priority: 'Medium',
         assignee: 'Ulviyya Mikayilova',
+        reporter: 'Nurlan Ibrahimov',
         dueDate: new Date().toISOString()
     },
     {
@@ -60,6 +62,7 @@ const INITIAL_TASKS = [
         type: 'Story',
         priority: 'High',
         assignee: 'Jamal Zeynalli',
+        reporter: 'Nurlan Ibrahimov',
         dueDate: new Date(Date.now() + 86400000).toISOString()
     }
 ];
@@ -156,6 +159,7 @@ export const AppProvider = ({ children }) => {
     const addTask = (taskData) => {
         const newTask = {
             createdAt: new Date().toISOString(),
+            reporter: DEFAULT_MEMBERS[0],
             comments: [],
             ...taskData
         };
@@ -198,7 +202,33 @@ export const AppProvider = ({ children }) => {
             ...sprints,
             [spaceId]: {
                 activeSprint: newSprintNumber,
-                sprints: [...spaceSprintData.sprints, { ...sprintData, number: newSprintNumber }]
+                sprints: [...spaceSprintData.sprints, { ...sprintData, number: newSprintNumber, id: uuidv4() }]
+            }
+        });
+    };
+
+    const updateSprint = (spaceId, sprintId, updates) => {
+        const spaceSprintData = sprints[spaceId];
+        if (!spaceSprintData) return;
+
+        setSprints({
+            ...sprints,
+            [spaceId]: {
+                ...spaceSprintData,
+                sprints: spaceSprintData.sprints.map(s => s.id === sprintId ? { ...s, ...updates } : s)
+            }
+        });
+    };
+
+    const deleteSprint = (spaceId, sprintId) => {
+        const spaceSprintData = sprints[spaceId];
+        if (!spaceSprintData) return;
+
+        setSprints({
+            ...sprints,
+            [spaceId]: {
+                ...spaceSprintData,
+                sprints: spaceSprintData.sprints.filter(s => s.id !== sprintId)
             }
         });
     };
@@ -240,8 +270,11 @@ export const AppProvider = ({ children }) => {
             deleteTask,
             getSpaceTasks,
             startSprint,
+            updateSprint,
+            deleteSprint,
             getActiveSprint,
-            sprints
+            sprints,
+            DEFAULT_MEMBERS
         }}>
             {children}
         </AppContext.Provider>
